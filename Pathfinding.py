@@ -53,7 +53,8 @@ class Node(arcade.SpriteCircle):
 
     def draw_connections(self):
         for node in self.connected_nodes:
-            arcade.draw_line(self.center_x, self.center_y, node.center_x, node.center_y, self.line_color, self.line_width)
+            arcade.draw_line(self.center_x, self.center_y, node.center_x, node.center_y,
+                             self.line_color, self.line_width)
 
 
 class Pathfinding(arcade.Window):
@@ -165,7 +166,9 @@ class Pathfinding(arcade.Window):
         if self.path is None:
             return
         for i in range(0, len(self.path)-1):
-            arcade.draw_line(self.path[i].center_x, self.path[i].center_y, self.path[i+1].center_x, self.path[i+1].center_y, arcade.color.GREEN, line_width=LINE_WIDTH)
+            arcade.draw_line(self.path[i].center_x, self.path[i].center_y,
+                             self.path[i+1].center_x, self.path[i+1].center_y,
+                             arcade.color.GREEN, line_width=LINE_WIDTH)
 
     def on_key_press(self, symbol: int, modifiers: int):
         """
@@ -176,6 +179,7 @@ class Pathfinding(arcade.Window):
         R to reset the nodes
         C to clear all edges
         D to clear a found path
+        E to delete all nodes
         :param symbol: The symbol clicked
         :param modifiers: modifiers
         :return: None
@@ -198,6 +202,12 @@ class Pathfinding(arcade.Window):
             self.path = None
             for node in self.nodes:
                 node.texture = arcade.make_circle_texture(NODE_RADIUS*2, arcade.color.BLUE)
+        elif symbol == arcade.key.E:
+            self.nodes = arcade.sprite_list.SpriteList()
+            self.nodes.append(self.start_node)
+            self.nodes.append(self.end_node)
+            self.start_node.connected_nodes = []
+            self.end_node.connected_nodes = []
 
     def get_node_at_point(self, x, y):
         for node in self.nodes:
@@ -233,14 +243,6 @@ def main():
     p = Pathfinding(num_nodes=NODES)
     p.setup()
     p.run()
-    # n1 = GeneralNode(1, 5)
-    # n2 = GeneralNode(2, 7)
-    # n3 = GeneralNode(1, 3)
-    # q = PriorityQueue()
-    # q.add_node(n1)
-    # q.add_node(n2)
-    # q.add_node(n3)
-    pass
 
 
 if __name__ == "__main__":
