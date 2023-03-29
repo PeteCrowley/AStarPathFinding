@@ -4,7 +4,7 @@ import math
 import time
 
 PADDING = 50
-NODES = 50
+NODES = 75
 NODE_RADIUS = 5
 LINE_WIDTH = max(1, NODE_RADIUS // 10)
 DELAY = 0.1
@@ -18,7 +18,7 @@ class PriorityQueue:
         self.queue.append(node)
 
     def pop_off_top(self):
-        least = min(self.queue, key=lambda x: x.h)
+        least = min(self.queue, key=lambda x: x.total_score)
         self.queue.remove(least)
         return least
 
@@ -35,9 +35,9 @@ class Node(arcade.SpriteCircle):
         self.connected_nodes = []
         self.line_color = arcade.color.BLACK
         self.line_width = LINE_WIDTH
-        self.f = 1_000_000
-        self.g = 1_000_000
-        self.h = self.f + self.g
+        self.distance_from_start = 1_000_000
+        self.distance_to_go = 1_000_000
+        self.total_score = self.distance_from_start + self.distance_to_go
         self.parent = None
 
     def add_connected_nodes(self, nodes):
@@ -96,20 +96,20 @@ class Pathfinding(arcade.Window):
     def astar_pathfinding(self):
         checked_nodes = []
         q = PriorityQueue()
-        self.start_node.f = 0
-        self.start_node.g = self.calculate_distance(self.start_node, self.end_node)
-        self.start_node.h = self.start_node.g
+        self.start_node.distance_from_start = 0
+        self.start_node.distance_to_go = self.calculate_distance(self.start_node, self.end_node)
+        self.start_node.total_score = self.start_node.distance_to_go
         parent = self.start_node
         checked_nodes.append(parent)
         while parent != self.end_node:
             children = parent.connected_nodes
             for child in children:
-                new_f = parent.f + self.calculate_distance(parent, child)
-                if new_f > child.f:
+                new_f = parent.distance_from_start + self.calculate_distance(parent, child)
+                if new_f > child.distance_from_start:
                     continue
-                child.f = parent.f + self.calculate_distance(parent, child)
-                child.g = self.calculate_heuristic(child)
-                child.h = child.f + child.g
+                child.distance_from_start = parent.distance_from_start + self.calculate_distance(parent, child)
+                child.distance_to_go = self.calculate_heuristic(child)
+                child.total_score = child.distance_from_start + child.distance_to_go
                 child.parent = parent
                 child.texture = arcade.make_circle_texture(NODE_RADIUS*2, arcade.color.GOLD)
                 if child not in checked_nodes:
