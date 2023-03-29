@@ -148,9 +148,6 @@ class Pathfinding(arcade.Window):
                 n.connected_nodes.remove(node)
         self.nodes.remove(node)
 
-    def on_update(self, delta_time: float):
-        pass
-
     def on_draw(self):
         self.clear()
         for node in self.nodes:
@@ -201,7 +198,14 @@ class Pathfinding(arcade.Window):
         elif symbol == arcade.key.D:
             self.path = None
             for node in self.nodes:
-                node.texture = arcade.make_circle_texture(NODE_RADIUS*2, arcade.color.BLUE)
+                if node == self.start_node:
+                    node.texture = arcade.make_circle_texture(NODE_RADIUS*2, arcade.color.WHITE)
+                elif node == self.end_node:
+                    node.texture = arcade.make_circle_texture(NODE_RADIUS * 2, arcade.color.RED)
+                else:
+                    node.texture = arcade.make_circle_texture(NODE_RADIUS * 2, arcade.color.BLUE)
+
+
         elif symbol == arcade.key.E:
             self.nodes = arcade.sprite_list.SpriteList()
             self.nodes.append(self.start_node)
